@@ -218,7 +218,7 @@ fn serve_template(
     let mut head = String::new();
     head.push_str("HTTP/1.1 200 OK\r\n");
     if !has_ct {
-        head.push_str("Content-Type: text/html\r\n");
+        head.push_str("Content-Type: text/html; charset=utf-8\r\n");
     }
     for h in &interp.headers {
         head.push_str(h);
@@ -249,15 +249,15 @@ fn serve_static(writer: &mut TcpStream, file: &Path) -> std::io::Result<()> {
 
 fn content_type(file: &Path) -> &'static str {
     match file.extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase().as_str() {
-        "css" => "text/css",
-        "js" => "text/javascript",
-        "json" => "application/json",
+        "css" => "text/css; charset=utf-8",
+        "js" => "text/javascript; charset=utf-8",
+        "json" => "application/json; charset=utf-8",
         "png" => "image/png",
         "jpg" | "jpeg" => "image/jpeg",
         "gif" => "image/gif",
         "svg" => "image/svg+xml",
         "ico" => "image/x-icon",
-        "txt" => "text/plain",
+        "txt" => "text/plain; charset=utf-8",
         _ => "application/octet-stream",
     }
 }
@@ -268,6 +268,12 @@ fn send(writer: &mut TcpStream, status: u16, ct: &str, body: &str) -> std::io::R
         404 => "Not Found",
         500 => "Internal Server Error",
         _ => "OK",
+    };
+    // Add a charset to textual types so UTF-8 in the body is not mangled.
+    let ct = if ct.starts_with("text/") && !ct.contains("charset") {
+        format!("{ct}; charset=utf-8")
+    } else {
+        ct.to_string()
     };
     let head = format!(
         "HTTP/1.1 {status} {reason}\r\nContent-Type: {ct}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",

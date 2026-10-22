@@ -88,7 +88,7 @@ fn main() -> ExitCode {
             .iter()
             .any(|h| h.to_ascii_lowercase().starts_with("content-type:"));
         if !has_content_type {
-            print!("Content-type: text/html\r\n");
+            print!("Content-type: text/html; charset=utf-8\r\n");
         }
         for h in &interp.headers {
             print!("{h}\r\n");
