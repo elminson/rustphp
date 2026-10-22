@@ -46,6 +46,21 @@ body) fields and the whole CGI environment are exposed as global `$variables`,
 and a default `Content-type: text/html` header is emitted unless the script
 sends its own via `header(...)`.
 
+**Development server** (like `php -S`): serves a directory, running each
+requested `.php` / `.phtml` / `.html` file through the interpreter with CGI
+variables (`REQUEST_METHOD`, `QUERY_STRING`, `HTTP_*` headers, GET/POST form
+fields) and serving other files as static assets.
+
+```bash
+rustphp --serve                    # http://127.0.0.1:8000, docroot = cwd
+rustphp --serve 3000 examples      # port 3000, docroot ./examples
+rustphp --serve 0.0.0.0:8080 .     # explicit address
+# then: curl 'http://127.0.0.1:8000/demo.php?name=Elminson'
+```
+
+It is a single-process, thread-per-connection dev server with no keep-alive —
+fine for local use, not meant to face the public internet.
+
 **Docker:**
 
 ```bash
@@ -137,7 +152,8 @@ prints a clear `not supported by rustphp` warning and continues.
 | `src/parser.rs`  | recursive-descent parser |
 | `src/interp.rs`  | tree-walking evaluator, scopes, arrays, control flow |
 | `src/builtins.rs`| pure builtins, printf, calendar math |
-| `src/main.rs`    | CLI / CGI front-end |
+| `src/server.rs`  | tiny dependency-free HTTP dev server (`--serve`) |
+| `src/main.rs`    | CLI / CGI / server front-end |
 
 The `docker-php-1.99s/` directory is the original devilbox Docker image for the
 real C build and is unrelated to the Rust port.

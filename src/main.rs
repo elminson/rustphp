@@ -10,6 +10,7 @@ mod builtins;
 mod interp;
 mod lexer;
 mod parser;
+mod server;
 mod token;
 mod value;
 
@@ -21,6 +22,11 @@ use interp::Interp;
 use value::Value;
 
 fn main() -> ExitCode {
+    let args: Vec<String> = std::env::args().collect();
+    if matches!(args.get(1).map(String::as_str), Some("--serve") | Some("-s") | Some("serve")) {
+        return run_server(&args[2..]);
+    }
+
     let is_cgi = std::env::var_os("GATEWAY_INTERFACE").is_some()
         || std::env::var_os("REQUEST_METHOD").is_some();
 
@@ -91,6 +97,31 @@ fn main() -> ExitCode {
     }
     print!("{}", interp.out);
     ExitCode::SUCCESS
+}
+
+/// `rustphp --serve [ADDR|PORT] [DOCROOT]`: start the development server.
+fn run_server(rest: &[String]) -> ExitCode {
+    let mut addr = "127.0.0.1:8000".to_string();
+    let mut docroot: Option<PathBuf> = None;
+    for a in rest {
+        if !a.is_empty() && a.chars().all(|c| c.is_ascii_digit()) {
+            addr = format!("127.0.0.1:{a}");
+        } else if a.contains(':') && !Path::new(a).exists() {
+            addr = a.clone();
+        } else {
+            docroot = Some(PathBuf::from(a));
+        }
+    }
+    let docroot = docroot
+        .or_else(|| std::env::current_dir().ok())
+        .unwrap_or_else(|| PathBuf::from("."));
+    match server::serve(&addr, docroot) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("rustphp: server error: {e}");
+            ExitCode::FAILURE
+        }
+    }
 }
 
 /// Find the script to run: an explicit CLI argument, or the CGI server's
