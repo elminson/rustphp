@@ -1,4 +1,4 @@
-<html><head><title>rustphp .php demo</title></head>
+<html><head><meta charset="utf-8"><title>rustphp .php demo</title></head>
 <body>
 <h1>rustphp — a .php file</h1>
 
