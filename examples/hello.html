@@ -1,0 +1,27 @@
+<html><head><title>rustphp demo</title></head>
+<body>
+<h1>Hello from rustphp</h1>
+<?
+$name = "world";
+echo "Hello, $name!<br>\n";
+
+/* a little arithmetic with C-style precedence */
+echo "2 + 3 * 4 = ", 2 + 3 * 4, "<br>\n";
+/* the format form of echo takes a format string then the value, with NO comma */
+echo "22/7 is about %6.2f" 22.0 / 7.0;
+echo "<br>\n";
+
+/* a while loop over a tokenised string */
+$tok = strtok("alpha beta gamma", " ");
+while($tok);
+	echo "token: $tok<br>\n";
+	$tok = strtok(" ");
+endwhile;
+
+/* a user-defined function */
+Function Square $x (
+	return($x * $x);
+);
+echo "Square(9) = ", Square(9), "<br>\n";
+>
+</body></html>

@@ -1,0 +1,6 @@
+target/
+.idea/
+docker-php-1.99s/
+files/
+.git/
+*.md

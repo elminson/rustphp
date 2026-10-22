@@ -1,0 +1,9 @@
+# Rust build output
+/target
+
+# Editor / IDE
+/.idea
+
+# Vendored reference: the original PHP/FI 1.99s devilbox Docker image
+# (third-party, carries its own .git). Not part of the Rust port.
+/docker-php-1.99s

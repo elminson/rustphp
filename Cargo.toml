@@ -1,0 +1,15 @@
+[package]
+name = "rustphp"
+version = "0.1.0"
+edition = "2021"
+description = "A clean-room reimplementation of the PHP/FI 1.99s interpreter in Rust"
+license = "GPL-2.0-or-later"
+
+[[bin]]
+name = "rustphp"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
